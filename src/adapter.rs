@@ -1,0 +1,50 @@
+//! Adapter.rs
+//! 
+//! ... add docs here later
+//! 
+
+use crate::{adapter_desc::AdapterDescription, buffer::{AoSBuffer, Buffer, SoABuffer}, memory_layout::{AoS, SoA}};
+
+/// Add docs here later
+pub struct Adapter<B>
+where
+    B: Buffer,
+{
+    _buffer: B,
+}
+
+impl Default for Adapter<AoSBuffer> {
+    fn default() -> Self {
+        Self {
+            _buffer: AoSBuffer::new(),
+        }
+    }
+}
+
+impl From<AdapterDescription<AoS>> for Adapter<AoSBuffer> {
+    fn from(_value: AdapterDescription<AoS>) -> Self {
+        Self::default()
+    }
+}
+
+impl From<AdapterDescription<SoA>> for Adapter<SoABuffer> {
+    fn from(_value: AdapterDescription<SoA>) -> Self {
+        Self {
+            _buffer: SoABuffer::new(),
+        }
+    }
+}
+
+impl From<&AdapterDescription<AoS>> for Adapter<AoSBuffer> {
+    fn from(_value: &AdapterDescription<AoS>) -> Self {
+        Self::default()
+    }
+}
+
+impl From<&AdapterDescription<SoA>> for Adapter<SoABuffer> {
+    fn from(_value: &AdapterDescription<SoA>) -> Self {
+        Self {
+            _buffer: SoABuffer::new(),
+        }
+    }
+}

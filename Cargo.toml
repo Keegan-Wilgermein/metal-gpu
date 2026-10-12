@@ -1,8 +1,8 @@
 [package]
 name = "metal-gpu"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2024"
-description = "Safe Rust wrapper around the Metal api"
+description = "Simple and safe Rust Metal renderer"
 license = "MIT"
 documentation = "https://docs.rs/metal-gpu"
 repository = "https://github.com/Keegan-Wilgermein/metal-gpu"
@@ -10,3 +10,4 @@ keywords = ["metal", "gpu", "renderer", "graphics", "api"]
 categories = ["graphics", "os::macos-apis"]
 
 [dependencies]
+objc2-metal = "0.3.2"
