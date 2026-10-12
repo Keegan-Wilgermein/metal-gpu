@@ -7,6 +7,6 @@ license = "MIT"
 documentation = "https://docs.rs/metal-gpu"
 repository = "https://github.com/Keegan-Wilgermein/metal-gpu"
 keywords = ["metal", "gpu", "renderer", "graphics", "api"]
-categories = ["multimedia::graphics", "os::macos-apis"]
+categories = ["graphics", "os::macos-apis"]
 
 [dependencies]
