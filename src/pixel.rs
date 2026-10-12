@@ -45,6 +45,14 @@ pub const BLUE: Pixel = Pixel {
     a: 1.0,
 };
 
+/// A transparent pixel
+pub const TRANSPARENT: Pixel = Pixel {
+    r: 0,
+    g: 0,
+    b: 0,
+    a: 0.0,
+};
+
 /// A representation
 /// the rgba values for
 /// a single pixel

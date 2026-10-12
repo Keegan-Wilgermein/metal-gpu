@@ -1,6 +1,6 @@
 //! # Tests
 
-use metal_gpu::{adapter_desc::{ADI, AdapterDescription}};
+use metal_gpu::{adapter_desc::{ADI, AdapterDescription}, image::save::SaveImage};
 
 #[test]
 fn main() {
@@ -8,5 +8,6 @@ fn main() {
         .switch_memory_layout()
         .build();
 
+    adapter.save_png();
     println!("{:?}", adapter);
 }

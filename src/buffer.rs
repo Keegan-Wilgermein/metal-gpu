@@ -3,7 +3,7 @@
 //! A gpu buffer
 //! 
 
-use crate::{memory_layout::{IntoMemLayout, MemLayout}, pixel::Pixel, point::Point};
+use crate::{image::save::SaveImage, memory_layout::{IntoMemLayout, MemLayout}, pixel::Pixel, point::Point};
 
 /// Defines methods that all buffers should implement
 pub trait Buffer {
@@ -35,6 +35,12 @@ impl Buffer for AoSBuffer {
     }
 }
 
+impl SaveImage for AoSBuffer {
+    fn save_png(&self) {
+        todo!()
+    }
+}
+
 /// SoA meaning contiguous memory alignment,
 /// ie. `[[x, x, ...], [y, y, ...]]`
 pub type SoABuffer = Vec<Vec<Pixel>>;
@@ -52,5 +58,11 @@ impl Buffer for SoABuffer {
 
     fn with_capacity(capacity: usize) -> Self {
         Vec::with_capacity(capacity)
+    }
+}
+
+impl SaveImage for SoABuffer {
+    fn save_png(&self) {
+        todo!()
     }
 }

@@ -3,7 +3,7 @@
 //! ... add docs here later
 //! 
 
-use crate::{adapter_desc::AdapterDescription, buffer::{AoSBuffer, Buffer, SoABuffer}, memory_layout::{AoS, IntoMemLayout, MemLayout, SoA}};
+use crate::{adapter_desc::AdapterDescription, buffer::{AoSBuffer, Buffer, SoABuffer}, image::save::SaveImage, memory_layout::{AoS, IntoMemLayout, MemLayout, SoA}};
 
 /// Add docs here later
 #[derive(Debug)]
@@ -11,13 +11,13 @@ pub struct Adapter<B>
 where
     B: Buffer,
 {
-    _buffer: B,
+    buffer: B,
 }
 
 impl Default for Adapter<AoSBuffer> {
     fn default() -> Self {
         Self {
-            _buffer: AoSBuffer::new(),
+            buffer: AoSBuffer::new(),
         }
     }
 }
@@ -31,7 +31,7 @@ impl From<AdapterDescription<AoS>> for Adapter<AoSBuffer> {
 impl From<AdapterDescription<SoA>> for Adapter<SoABuffer> {
     fn from(_value: AdapterDescription<SoA>) -> Self {
         Self {
-            _buffer: SoABuffer::new(),
+            buffer: SoABuffer::new(),
         }
     }
 }
@@ -45,7 +45,7 @@ impl From<&AdapterDescription<AoS>> for Adapter<AoSBuffer> {
 impl From<&AdapterDescription<SoA>> for Adapter<SoABuffer> {
     fn from(_value: &AdapterDescription<SoA>) -> Self {
         Self {
-            _buffer: SoABuffer::new(),
+            buffer: SoABuffer::new(),
         }
     }
 }
@@ -59,5 +59,17 @@ impl IntoMemLayout for Adapter<AoSBuffer> {
 impl IntoMemLayout for Adapter<SoABuffer> {
     fn get_memory_layout(&self) -> MemLayout {
         MemLayout::SoA
+    }
+}
+
+impl SaveImage for Adapter<AoSBuffer> {
+    fn save_png(&self) {
+        self.buffer.save_png();
+    }
+}
+
+impl SaveImage for Adapter<SoABuffer> {
+    fn save_png(&self) {
+        self.buffer.save_png();
     }
 }
