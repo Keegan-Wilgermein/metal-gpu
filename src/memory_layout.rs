@@ -16,7 +16,7 @@ pub trait MemSeal {}
 /// want to perform operations
 /// on each axis seperately
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(crate) struct SoA;
+pub struct SoA;
 
 impl MemSeal for SoA {}
 
@@ -28,9 +28,14 @@ impl MemSeal for SoA {}
 /// want to perform operations
 /// on each axis together
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(crate) struct AoS;
+pub struct AoS;
 
 impl MemSeal for AoS {}
+
+pub trait IntoMemLayout {
+    /// Gets the memory layout
+    fn get_memory_layout(&self) -> MemLayout;
+}
 
 /// I'm too lazy to write `ory` everytime
 pub type MemLayout = MemoryLayout;

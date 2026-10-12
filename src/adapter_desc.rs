@@ -1,11 +1,11 @@
 //! # Adapter Description
 //! 
-//! A adapter description
+//! An adapter description
 //! 
 
 use std::marker::PhantomData;
 
-use crate::{adapter::Adapter, buffer::{AoSBuffer, SoABuffer}, memory_layout::{AoS, MemLayout, MemSeal, SoA}};
+use crate::{adapter::Adapter, buffer::{AoSBuffer, Buffer, SoABuffer}, memory_layout::{AoS, IntoMemLayout, MemLayout, MemSeal, SoA}};
 
 /// Describes the adapter
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -24,40 +24,48 @@ impl Default for AdapterDescription<AoS> {
     }
 }
 
-impl AdapterDescription<AoS> {
-    /// Gets the memory layout
-    pub fn get_memory_layout(&self) -> MemLayout {
+impl ADI for AdapterDescription<AoS> {
+    type SwitchMem = SoA;
+    type Buf = AoSBuffer;
+}
+
+impl IntoMemLayout for AdapterDescription<AoS> {
+    fn get_memory_layout(&self) -> MemLayout {
         MemLayout::AoS
-    }
-
-    /// Consumes itself, switches the memory layout, and returns a new copy
-    pub fn with_soa_layout(self) -> AdapterDescription<SoA> {
-        AdapterDescription {
-            _mem_mark: PhantomData,
-        }
-    }
-
-    /// Creates an `Adapter` from the configuration
-    pub fn build(&self) -> Adapter<AoSBuffer> {
-        Adapter::from(self)
     }
 }
 
-impl AdapterDescription<SoA> {
-    /// Gets the memory layout
-    pub fn get_memory_layout(&self) -> MemLayout {
+impl ADI for AdapterDescription<SoA> {
+    type SwitchMem = AoS;
+    type Buf = SoABuffer;
+}
+
+impl IntoMemLayout for AdapterDescription<SoA> {
+    fn get_memory_layout(&self) -> MemLayout {
         MemLayout::SoA
     }
+}
+
+/// Adapter Description Implementation
+pub trait ADI {
+    type SwitchMem: MemSeal;
+    type Buf: Buffer;
 
     /// Consumes itself, switches the memory layout, and returns a new copy
-    pub fn with_aos_layout(self) -> AdapterDescription<AoS> {
+    fn switch_memory_layout(self) -> AdapterDescription<Self::SwitchMem>
+    where
+        Self: Sized,
+    {
         AdapterDescription {
             _mem_mark: PhantomData,
         }
     }
 
     /// Creates an `Adapter` from the configuration
-    pub fn build(&self) -> Adapter<SoABuffer> {
+    fn build(&self) -> Adapter<Self::Buf>
+    where
+        for<'a> Adapter<Self::Buf>: From<&'a Self>,
+    {
         Adapter::from(self)
     }
 }

@@ -3,9 +3,10 @@
 //! ... add docs here later
 //! 
 
-use crate::{adapter_desc::AdapterDescription, buffer::{AoSBuffer, Buffer, SoABuffer}, memory_layout::{AoS, SoA}};
+use crate::{adapter_desc::AdapterDescription, buffer::{AoSBuffer, Buffer, SoABuffer}, memory_layout::{AoS, IntoMemLayout, MemLayout, SoA}};
 
 /// Add docs here later
+#[derive(Debug)]
 pub struct Adapter<B>
 where
     B: Buffer,
@@ -46,5 +47,17 @@ impl From<&AdapterDescription<SoA>> for Adapter<SoABuffer> {
         Self {
             _buffer: SoABuffer::new(),
         }
+    }
+}
+
+impl IntoMemLayout for Adapter<AoSBuffer> {
+    fn get_memory_layout(&self) -> MemLayout {
+        MemLayout::AoS
+    }
+}
+
+impl IntoMemLayout for Adapter<SoABuffer> {
+    fn get_memory_layout(&self) -> MemLayout {
+        MemLayout::SoA
     }
 }
