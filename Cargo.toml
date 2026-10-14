@@ -10,4 +10,6 @@ keywords = ["metal", "gpu", "renderer", "graphics", "api"]
 categories = ["graphics", "os::macos-apis"]
 
 [dependencies]
-objc2-metal = "0.3.2"
+objc2 = "0.6.5"
+objc2-core-graphics = "0.3.2"
+objc2-metal = { version = "0.3.2", features = ["MTLDevice", "MTLTypes"] }
