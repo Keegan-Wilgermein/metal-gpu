@@ -67,7 +67,9 @@ where
                 MetalResources::StorageModeShared,
             ) { b } else { return None };
         
-        let layer = todo!();
+        let layer = MetalLayer::default()
+            .with_device(&device)
+            .with_frame_buffer_only(false);
 
         Some(Self {
             device,

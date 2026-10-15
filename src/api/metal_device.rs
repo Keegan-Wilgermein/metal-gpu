@@ -29,6 +29,18 @@ impl From<Retained<ProtocolObject<dyn MTLDevice>>> for MetalDevice {
     }
 }
 
+impl From<MetalDevice> for Retained<ProtocolObject<dyn MTLDevice>> {
+    fn from(value: MetalDevice) -> Self {
+        value.retain
+    }
+}
+
+impl AsRef<ProtocolObject<dyn MTLDevice>> for MetalDevice {
+    fn as_ref(&self) -> &ProtocolObject<dyn MTLDevice> {
+        &self.retain
+    }
+}
+
 impl MetalDevice {
     /// Gets the devices name
     pub fn get_name(&self) -> String {
