@@ -1,21 +1,8 @@
 //! # Tests
 
-use metal_gpu::functions::{get_available_devices, get_default_device};
+use metal_gpu::{api::{render_strategy::CPUBuffer, renderer::Renderer}, functions::{get_available_devices, get_default_device}};
 
 #[test]
 fn main() {
-    let maybe_device = get_default_device();
-
-    if let Some(device) = maybe_device {
-        println!("Default device: {}", device.get_name());
-    }
-
-    let devices = get_available_devices();
-    devices.iter().for_each(|device| {
-        println!(
-            "{} : {}",
-            device.get_name(),
-            device.get_id(),
-        );
-    });
+    let renderer = Renderer::<CPUBuffer, u16>::new();
 }
