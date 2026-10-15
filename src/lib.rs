@@ -6,7 +6,7 @@
 // Folders
 pub mod api;
 pub mod metal;
-pub(crate) mod modules;
+pub mod modules;
 
 // Re exports
 pub use api::functions;

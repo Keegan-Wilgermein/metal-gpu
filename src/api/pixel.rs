@@ -5,7 +5,7 @@
 
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
-use crate::modules::metal_format::MetalFormat;
+use crate::metal::metal_format::MetalFormat;
 
 /// A representation
 /// the rgba values for
@@ -13,7 +13,7 @@ use crate::modules::metal_format::MetalFormat;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Pixel<B>
 where
-    B: Clone + Copy + MetalFormat,
+    B: Copy + MetalFormat,
 {
     /// Red
     r: B,
@@ -27,7 +27,7 @@ where
 
 impl<B> Add for Pixel<B>
 where
-    B: Clone + Copy + MetalFormat + Add<Output = B>,
+    B: Copy + MetalFormat + Add<Output = B>,
 {
     type Output = Self;
 
@@ -43,7 +43,7 @@ where
 
 impl<B> Sub for Pixel<B>
 where
-    B: Clone + Copy + MetalFormat + Sub<Output = B>,
+    B: Copy + MetalFormat + Sub<Output = B>,
 {
     type Output = Self;
 
@@ -59,7 +59,7 @@ where
 
 impl<B> Mul for Pixel<B>
 where
-    B: Clone + Copy + MetalFormat + Mul<Output = B>,
+    B: Copy + MetalFormat + Mul<Output = B>,
 {
     type Output = Self;
 
@@ -75,7 +75,7 @@ where
 
 impl<B> Div for Pixel<B>
 where
-    B: Clone + Copy + MetalFormat + Div<Output = B>,
+    B: Copy + MetalFormat + Div<Output = B>,
 {
     type Output = Self;
 
@@ -91,7 +91,7 @@ where
 
 impl<B> AddAssign for Pixel<B>
 where
-    B: Clone + Copy + MetalFormat + AddAssign,
+    B: Copy + MetalFormat + AddAssign,
 {
     fn add_assign(&mut self, rhs: Self) {
         self.r += rhs.r;
@@ -103,7 +103,7 @@ where
 
 impl<B> SubAssign for Pixel<B>
 where
-    B: Clone + Copy + MetalFormat + SubAssign,
+    B: Copy + MetalFormat + SubAssign,
 {
     fn sub_assign(&mut self, rhs: Self) {
         self.r -= rhs.r;
@@ -115,7 +115,7 @@ where
 
 impl<B> MulAssign for Pixel<B>
 where
-    B: Clone + Copy + MetalFormat + MulAssign,
+    B: Copy + MetalFormat + MulAssign,
 {
     fn mul_assign(&mut self, rhs: Self) {
         self.r *= rhs.r;
@@ -127,7 +127,7 @@ where
 
 impl<B> DivAssign for Pixel<B>
 where
-    B: Clone + Copy + MetalFormat + DivAssign,
+    B: Copy + MetalFormat + DivAssign,
 {
     fn div_assign(&mut self, rhs: Self) {
         self.r /= rhs.r;
@@ -141,7 +141,7 @@ where
 
 impl<B> Default for Pixel<B>
 where
-    B: Clone + Copy + MetalFormat + Default,
+    B: Copy + MetalFormat + Default,
 {
     fn default() -> Self {
         Self {
@@ -155,7 +155,7 @@ where
 
 impl<B> From<B> for Pixel<B>
 where
-    B: Clone + Copy + MetalFormat,
+    B: Copy + MetalFormat,
 {
     fn from(value: B) -> Self {
         Self {
@@ -169,7 +169,7 @@ where
 
 impl<B> Pixel<B>
 where
-    B: Clone + Copy + MetalFormat,
+    B: Copy + MetalFormat,
 {
     /// Creates a new `Pixel`
     /// with the `MAX` value of `B`

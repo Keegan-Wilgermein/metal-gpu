@@ -3,76 +3,77 @@
 //! The renderer used to make calls to the gpu
 //! 
 
-use std::marker::PhantomData;
-use crate::{api::{metal_device::MetalDevice, render_strategy::{CPUBuffer, ComputeShader, RenderMethods, RenderStrategy, TextureBuffer, TextureShader}}, functions::get_default_device, modules::metal_format::MetalFormat};
+use std::{marker::PhantomData};
+use crate::{api::metal_device::MetalDevice, functions::get_default_device, metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_layer::MetalLayer, metal_resources::MetalResources}, modules::{dimensional::Dimensional, render_strategy::{CPUBuffer, RenderMethods, RenderStrategy}}};
 
 pub struct Renderer<T, P>
 where
     T: RenderStrategy,
-    P: Clone + Copy + MetalFormat,
+    P: Copy + MetalFormat,
 {
     device: MetalDevice,
+    layer: MetalLayer<P>,
+    buffer: MetalBuffer,
     _render_mark: PhantomData<T>,
-    _pixel_format_mark: PhantomData<P>,
 }
 
 impl<T, P> Drop for Renderer<T, P>
 where
     T: RenderStrategy,
-    P: Clone + Copy + MetalFormat,
+    P: Copy + MetalFormat,
 {
     fn drop(&mut self) {}
 }
 
-impl<T, P> From<MetalDevice> for Renderer<T, P>
-where
-    T: RenderStrategy,
-    P: Clone + Copy + MetalFormat,
-{
-    fn from(value: MetalDevice) -> Self {
-        Self {
-            device: value,
-            _render_mark: PhantomData,
-            _pixel_format_mark: PhantomData,
-        }
-    }
-}
-
 // impl<P> RenderMethods for Renderer<TextureShader, P>
 // where
-//     P: Clone + Copy + MetalFormat,
+//     P: Copy + MetalFormat,
 // {}
 
 // impl<P> RenderMethods for Renderer<ComputeShader, P>
 // where
-//     P: Clone + Copy + MetalFormat,
+//     P: Copy + MetalFormat,
 // {}
 
 impl<P> RenderMethods for Renderer<CPUBuffer, P>
 where
-    P: Clone + Copy + MetalFormat,
+    P: Copy + MetalFormat,
 {}
 
 // impl<P> RenderMethods for Renderer<TextureBuffer, P>
 // where
-//     P: Clone + Copy + MetalFormat,
+//     P: Copy + MetalFormat,
 // {}
 
 impl<T, P> Renderer<T, P>
 where
     T: RenderStrategy,
-    P: Clone + Copy + MetalFormat,
+    P: Copy + MetalFormat,
 {
-
     /// Creates a new `Renderer`
-    pub fn new() -> Option<Self> {
+    pub fn new<D, U>(
+        length: D,
+    ) -> Option<Self>
+    where
+        D: Dimensional + Dimensional<Output = U>,
+        U: Into<usize>,
+    {
         let device = if let Some(d) = get_default_device()
             { d } else { return None };
 
+        let buffer = if let Some(b) =
+            device.create_buffer(
+                length.get_size().into(),
+                MetalResources::StorageModeShared,
+            ) { b } else { return None };
+        
+        let layer = todo!();
+
         Some(Self {
             device,
+            layer,
+            buffer,
             _render_mark: PhantomData,
-            _pixel_format_mark: PhantomData
         })
     }
 }

@@ -3,4 +3,6 @@
 //! Mode file for modules
 //! 
 
-pub(crate) mod metal_format;
+pub mod render_strategy;
+pub mod dimensional;
+pub mod primitive;

@@ -6,7 +6,9 @@
 use std::hash::Hash;
 
 use objc2::{rc::Retained, runtime::ProtocolObject};
-use objc2_metal::MTLDevice;
+use objc2_metal::{MTLDevice};
+
+use crate::metal::{metal_buffer::MetalBuffer, metal_resources::MetalResources};
 
 /// Metal api interface
 pub struct MetalDevice {
@@ -36,5 +38,22 @@ impl MetalDevice {
     /// Gets the id of the device
     pub fn get_id(&self) -> u64 {
         self.retain.registryID()
+    }
+}
+
+// Crate only implementations
+
+impl MetalDevice {
+    pub(crate) fn create_buffer(
+        &self,
+        length: usize,
+        options: MetalResources,
+    ) -> Option<MetalBuffer> {
+        self.retain.newBufferWithLength_options(
+            length,
+            options.into(),
+        ).map(|retain| {
+            MetalBuffer::from(retain)
+        })
     }
 }
