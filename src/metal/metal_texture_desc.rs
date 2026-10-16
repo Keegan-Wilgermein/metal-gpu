@@ -8,7 +8,7 @@ use std::marker::PhantomData;
 use objc2::rc::Retained;
 use objc2_metal::MTLTextureDescriptor;
 
-use crate::metal::metal_format::MetalFormat;
+use crate::metal::{metal_format::MetalFormat, metal_texture_usage::MetalTextureUsage};
 
 /// A description of a metal texture
 pub struct MetalTextureDecsription<P>
@@ -17,6 +17,7 @@ where
 {
     width: usize,
     height: usize,
+    usage: MetalTextureUsage,
     _pixel_format_mark: PhantomData<P>,
 }
 
@@ -29,6 +30,7 @@ where
         out.setPixelFormat(P::PIXEL_FORMAT);
         unsafe { out.setWidth(value.width) };
         unsafe { out.setHeight(value.height) };
+        out.setUsage(value.usage.into());
 
         out
     }
@@ -42,11 +44,23 @@ where
     pub fn new(
         width: usize,
         height: usize,
+        usage: MetalTextureUsage,
     ) -> Self {
         Self {
             width,
             height,
+            usage,
             _pixel_format_mark: PhantomData,
         }
+    }
+
+    /// Gets the width of the texture
+    pub fn get_width(&self) -> usize {
+        self.width
+    }
+
+    /// Gets the height of the texture
+    pub fn get_height(&self) -> usize {
+        self.height
     }
 }

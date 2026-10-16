@@ -10,8 +10,27 @@ keywords = ["metal", "gpu", "renderer", "graphics", "api"]
 categories = ["graphics", "os::macos-apis"]
 
 [dependencies]
+bitflags = "2.13.2"
 objc2 = "0.6.5"
 objc2-core-graphics = "0.3.2"
-objc2-metal = { version = "0.3.2", features = ["MTLDevice", "MTLTypes", "MTLBuffer"] }
-objc2-quartz-core = { version = "0.3.2", features = ["CALayer", "CAMetalLayer", "objc2-metal"] }
+objc2-foundation = { version = "0.3.2", default-features = false, features = ["NSString", "NSError"] }
+objc2-metal = { version = "0.3.2", default-features = false, features = [
+    "MTLDevice",
+    "MTLTypes",
+    "MTLBuffer",
+    "MTLLibrary",
+    "MTLComputePipeline",
+    "MTLCommandQueue",
+    "MTLCommandBuffer",
+    "MTLCommandEncoder",
+    "MTLComputeCommandEncoder",
+    "MTLTexture",
+    "MTLPixelFormat",
+    "MTLResource",
+    ] }
+objc2-quartz-core = { version = "0.3.2", default-features = false, features = [
+    "CALayer",
+    "CAMetalLayer",
+    "objc2-metal",
+    ] }
 png = "0.18.1"

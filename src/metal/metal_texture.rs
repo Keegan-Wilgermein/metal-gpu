@@ -53,6 +53,13 @@ where
     where
         P: Copy + MetalFormat,
     {
+        // Metal aborts the process instead of failing
+        // if a 2D texture is larger than 16384 in either
+        // direction, the limit on every Mac GPU
+        if desc.get_width() > 16384 || desc.get_height() > 16384 {
+            return None;
+        }
+
         let bytes_per_row = device.min_linear_texture_alignment_for_format::<P>()
             .check_alignment(width * mem::size_of::<Pixel<P>>()).ok()?;
 
@@ -61,5 +68,15 @@ where
             0,
             bytes_per_row,
         )?)
+    }
+
+    /// gets the width of the texture
+    pub(crate) fn get_width(&self) -> usize {
+        self.retain.width()
+    }
+
+    /// gets the height of the texture
+    pub(crate) fn get_height(&self) -> usize {
+        self.retain.height()
     }
 }

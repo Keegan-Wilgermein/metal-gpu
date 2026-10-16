@@ -4,9 +4,25 @@
 //! for  `T` in a `Renderer`
 //! 
 
+use std::ops::Mul;
+use crate::{api::dimensions::Dimensions, modules::{into_ext::IntoExtend, primitive::UPrimitive}};
+
 /// Methods that the renderer must implement
 /// on every kind of pipeline
-pub trait RenderMethods {}
+pub trait RenderMethods {
+    /// Creates a new `Self`
+    /// with a length
+    fn new<C, U>(
+        length: C,
+    ) -> Option<Self>
+    where
+        Self: Sized,
+        C: Into<Dimensions<U>>,
+        U: IntoExtend<usize>
+            + UPrimitive
+            + Copy
+            + Mul<Output = U>;
+}
 
 /// Renderer gate
 pub trait RenderStrategy {}

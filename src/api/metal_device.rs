@@ -6,9 +6,10 @@
 use std::hash::Hash;
 
 use objc2::{rc::Retained, runtime::ProtocolObject};
+use objc2_foundation::{NSError, NSString};
 use objc2_metal::{MTLDevice};
 
-use crate::metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_resources::MetalResources};
+use crate::metal::{metal_buffer::MetalBuffer, metal_command_queue::MetalCommandQueue, metal_compile_options::MetalCompileOptions, metal_compute_pipeline::MetalComputePipeline, metal_format::MetalFormat, metal_function::MetalFunction, metal_library::MetalLibrary, metal_resources::MetalResources};
 
 /// Metal api interface
 pub struct MetalDevice {
@@ -77,5 +78,38 @@ impl MetalDevice {
         P: Copy + MetalFormat,
     {
         self.retain.minimumLinearTextureAlignmentForPixelFormat(P::PIXEL_FORMAT)
+    }
+
+    /// Creates a new command queue
+    pub(crate) fn new_command_queue(&self) -> Option<MetalCommandQueue> {
+        self.retain.newCommandQueue().map(|retain| {
+            retain.into()
+        })
+    }
+
+    /// Creates a new library
+    pub(crate) fn new_library(
+        &self,
+        source: &str,
+        _options: Option<MetalCompileOptions>,
+    ) -> Result<MetalLibrary, Retained<NSError>> {
+        self.retain.newLibraryWithSource_options_error(
+            &NSString::from_str(source),
+            None,
+        ).map(|v| {
+            v.into()
+        })
+    }
+
+    /// Creates a new compute pipeline
+    pub(crate) fn new_compute_pipeline(
+        &self,
+        function: MetalFunction,
+    ) -> Result<MetalComputePipeline, Retained<NSError>> {
+        self.retain.newComputePipelineStateWithFunction_error(
+            function.as_ref()
+        ).map(|v| {
+            v.into()
+        })
     }
 }
