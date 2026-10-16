@@ -28,5 +28,41 @@ where
 impl MetalFormat for u8 {
     const MIN: Self = u8::MIN;
     const MAX: Self = u8::MAX;
-    const PIXEL_FORMAT: MTLPixelFormat = MTLPixelFormat::BGRA8Unorm;
+    const PIXEL_FORMAT: MTLPixelFormat = MTLPixelFormat::RGBA8Uint;
+}
+
+impl MetalFormat for i8 {
+    const MIN: Self = i8::MIN;
+    const MAX: Self = i8::MAX;
+    const PIXEL_FORMAT: MTLPixelFormat = MTLPixelFormat::RGBA8Sint;
+}
+
+impl MetalFormat for u16 {
+    const MIN: Self = u16::MIN;
+    const MAX: Self = u16::MAX;
+    const PIXEL_FORMAT: MTLPixelFormat = MTLPixelFormat::RGBA16Uint;
+}
+
+impl MetalFormat for i16 {
+    const MIN: Self = i16::MIN;
+    const MAX: Self = i16::MAX;
+    const PIXEL_FORMAT: MTLPixelFormat = MTLPixelFormat::RGBA16Sint;
+}
+
+impl MetalFormat for u32 {
+    const MIN: Self = u32::MIN;
+    const MAX: Self = u32::MAX;
+    const PIXEL_FORMAT: MTLPixelFormat = MTLPixelFormat::RGBA32Uint;
+}
+
+impl MetalFormat for i32 {
+    const MIN: Self = i32::MIN;
+    const MAX: Self = i32::MAX;
+    const PIXEL_FORMAT: MTLPixelFormat = MTLPixelFormat::RGBA32Sint;
+}
+
+impl MetalFormat for f32 {
+    const MIN: Self = f32::MIN;
+    const MAX: Self = f32::MAX;
+    const PIXEL_FORMAT: MTLPixelFormat = MTLPixelFormat::RGBA32Float;
 }

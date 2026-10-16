@@ -6,9 +6,9 @@
 use std::hash::Hash;
 
 use objc2::{rc::Retained, runtime::ProtocolObject};
-use objc2_metal::{MTLDevice};
+use objc2_metal::{MTLDevice, MTLTextureDescriptor};
 
-use crate::metal::{metal_buffer::MetalBuffer, metal_resources::MetalResources};
+use crate::metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_resources::MetalResources, metal_texture::MetalTexture, metal_texture_desc::MetalTextureDecsription};
 
 /// Metal api interface
 pub struct MetalDevice {
@@ -66,6 +66,22 @@ impl MetalDevice {
             options.into(),
         ).map(|retain| {
             MetalBuffer::from(retain)
+        })
+    }
+
+    pub(crate) fn new_texture<P>(
+        &self,
+        desc: MetalTextureDecsription<P>,
+    ) -> Option<MetalTexture<P>>
+    where
+        P: Copy + MetalFormat,
+    {
+        let desc: Retained<MTLTextureDescriptor> = desc.into();
+
+        self.retain.newTextureWithDescriptor(
+            &desc,
+        ).map(|v| {
+            v.into()
         })
     }
 }

@@ -8,7 +8,7 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 use crate::metal::metal_format::MetalFormat;
 
 /// A representation
-/// the bgra values for
+/// the rgba values for
 /// a pixel
 #[repr(C)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -16,12 +16,12 @@ pub struct Pixel<B>
 where
     B: Copy + MetalFormat,
 {
-    /// Blue
-    b: B,
-    /// Green
-    g: B,
     /// Red
     r: B,
+    /// Green
+    g: B,
+    /// Blue
+    b: B,
     /// Alpha
     a: B,
 }

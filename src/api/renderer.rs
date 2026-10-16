@@ -5,7 +5,7 @@
 
 use std::{marker::PhantomData, mem, ops::Mul};
 
-use crate::{api::{dimensions::Dimensions, metal_device::MetalDevice, pixel::Pixel}, functions::get_default_device, metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_layer::MetalLayer, metal_resources::MetalResources}, modules::{buffer_conversion::IntoBuffer, into_ext::IntoExtend, primitive::UPrimitive, render_strategy::{CPUBuffer, RenderMethods, RenderStrategy}}};
+use crate::{api::{dimensions::Dimensions, metal_device::MetalDevice, pixel::Pixel}, functions::get_default_device, metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_resources::MetalResources, metal_texture::MetalTexture, metal_texture_desc::MetalTextureDecsription}, modules::{buffer_conversion::IntoBuffer, into_ext::IntoExtend, primitive::UPrimitive, render_strategy::{CPUBuffer, RenderMethods, RenderStrategy}}};
 
 pub struct Renderer<T, P>
 where
@@ -13,7 +13,7 @@ where
     P: Copy + MetalFormat,
 {
     device: MetalDevice,
-    layer: MetalLayer<P>,
+    texture: MetalTexture<P>,
     buffer: MetalBuffer,
     _render_mark: PhantomData<T>,
 }
@@ -62,25 +62,29 @@ where
         + Copy
         + Mul<Output = C>,
     {
+        let length = length.into();
         let device = if let Some(d) = get_default_device()
             { d } else { return None };
 
         let buffer = if let Some(b) =
             device.create_buffer(
                 length
-                    .into()
                     .get_size()
                     .into_idx() * mem::size_of::<Pixel<P>>(),
                 MetalResources::StorageModeShared,
             ) { b } else { return None };
-        
-        let layer = MetalLayer::default()
-            .with_device(&device)
-            .with_frame_buffer_only(false);
+
+        let desc = MetalTextureDecsription::new(
+            length.get_x_length().into_idx(),
+            length.get_y_length().into_idx(),
+        );
+
+        let texture = if let Some(t) = device.new_texture(desc)
+            { t } else { return None };
 
         Some(Self {
             device,
-            layer,
+            texture,
             buffer,
             _render_mark: PhantomData,
         })
@@ -96,9 +100,6 @@ where
     {
         let rgba_buffer: &mut [Pixel<P>] = self.buffer.as_ref()
             .into_pixel_buffer();
-
-        let drawable = self.layer.as_ref()
-            .nextDrawable();
 
         (callback)(rgba_buffer);
     }
