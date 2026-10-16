@@ -54,7 +54,7 @@ where
         P: Copy + MetalFormat,
     {
         let bytes_per_row = device.min_linear_texture_alignment_for_format::<P>()
-            .check_alignment(width * mem::size_of::<Pixel<P>>())?;
+            .check_alignment(width * mem::size_of::<Pixel<P>>()).ok()?;
 
         Some(buffer.new_texture_with_offset(
             desc,

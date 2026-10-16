@@ -4,6 +4,7 @@
 //! for different types and conditions
 //! 
 
+/// Checks for correct byte alignment
 pub trait ByteAlignment
 where
     Self: Sized,
@@ -16,17 +17,17 @@ where
     fn check_alignment(
         &self,
         total: usize,
-    ) -> Option<Self>;
+    ) -> Result<Self, ()>;
 }
 
 impl ByteAlignment for usize {
     fn check_alignment(
         &self,
         total: usize,
-    ) -> Option<Self> {
+    ) -> Result<Self, ()> {
         match total.checked_rem(*self) {
-            Some(0) => Some(total),
-            _ => None,
+            Some(0) => Ok(total),
+            _ => Err(()),
         }
     }
 }
