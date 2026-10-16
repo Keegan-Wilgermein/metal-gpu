@@ -25,12 +25,21 @@ impl<P> Default for MetalLayer<P>
 {
     fn default() -> Self {
         let layer = CAMetalLayer::new();
-        layer.setPixelFormat(P::get_pixel_format());
+        layer.setPixelFormat(P::PIXEL_FORMAT);
 
         Self {
             retain: layer,
             _pixel_format_mark: PhantomData,
         }
+    }
+}
+
+impl<P> AsRef<CAMetalLayer> for MetalLayer<P>
+where
+    P: Copy + MetalFormat,
+{
+    fn as_ref(&self) -> &CAMetalLayer {
+        &self.retain
     }
 }
 

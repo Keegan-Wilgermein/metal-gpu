@@ -3,21 +3,20 @@
 //! Describes a set of dimensions
 //! 
 
-use std::ops::Mul;
+use std::{ops::Mul};
 
-use crate::modules::{dimensional::Dimensional, primitive::UPrimitive};
+use crate::modules::{primitive::UPrimitive};
 
-/// The size of 3 dimension
-pub struct Dimensions3D<T>
+/// The size of 2 dimension
+pub struct Dimensions<T>
 where
     T: UPrimitive + Copy + Mul<Output = T>,
 {
     x: T,
     y: T,
-    z: T
 }
 
-impl<T> Default for Dimensions3D<T>
+impl<T> Default for Dimensions<T>
 where
     T: UPrimitive + Copy + Mul<Output = T> + Default,
 {
@@ -25,36 +24,35 @@ where
         Self {
             x: T::default(),
             y: T::default(),
-            z: T::default(),
         }
     }
 }
 
-impl<T> Dimensional for Dimensions3D<T>
+impl<T> From<T> for Dimensions<T>
 where
     T: UPrimitive + Copy + Mul<Output = T>,
 {
-    type Output = T;
-
-    fn get_size(&self) -> Self::Output {
-        self.x * self.y * self.z
+    fn from(value: T) -> Self {
+        Self {
+            x: value,
+            y: value,
+        }
     }
 }
 
-impl<T> From<(T, T, T)> for Dimensions3D<T>
+impl<T> From<(T, T)> for Dimensions<T>
 where
     T: UPrimitive + Copy + Mul<Output = T>,
 {
-    fn from(value: (T, T, T)) -> Self {
+    fn from(value: (T, T)) -> Self {
         Self {
             x: value.0,
             y: value.1,
-            z: value.2,
         }
     }
 }
 
-impl<T> Dimensions3D<T>
+impl<T> Dimensions<T>
 where
     T: UPrimitive + Copy + Mul<Output = T>,
 {
@@ -62,12 +60,10 @@ where
     pub fn from_dimensions(
         x: T,
         y: T,
-        z: T,
     ) -> Self {
         Self {
             x,
             y,
-            z,
         }
     }
 
@@ -91,13 +87,9 @@ where
         self.y
     }
 
-    /// Sets the length of the z dimension
-    pub fn set_z_length(&mut self, z: T) {
-        self.z = z;
-    }
-
-    /// Gets the length of the z dimension
-    pub fn get_z_length(& self) -> T {
-        self.z
+    /// Gets the combined size of
+    /// the dimensions
+    pub fn get_size(&self) -> T {
+        self.x * self.y
     }
 }

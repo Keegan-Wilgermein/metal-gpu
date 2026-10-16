@@ -17,3 +17,9 @@ impl From<Retained<ProtocolObject<dyn MTLBuffer>>> for MetalBuffer {
         }
     }
 }
+
+impl AsRef<ProtocolObject<dyn MTLBuffer>> for MetalBuffer {
+    fn as_ref(&self) -> &ProtocolObject<dyn MTLBuffer> {
+        &self.retain
+    }
+}

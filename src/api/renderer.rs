@@ -3,8 +3,9 @@
 //! The renderer used to make calls to the gpu
 //! 
 
-use std::{marker::PhantomData};
-use crate::{api::metal_device::MetalDevice, functions::get_default_device, metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_layer::MetalLayer, metal_resources::MetalResources}, modules::{dimensional::Dimensional, render_strategy::{CPUBuffer, RenderMethods, RenderStrategy}}};
+use std::{marker::PhantomData, mem, ops::Mul};
+
+use crate::{api::{dimensions::Dimensions, metal_device::MetalDevice, pixel::Pixel}, functions::get_default_device, metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_layer::MetalLayer, metal_resources::MetalResources}, modules::{buffer_conversion::IntoBuffer, into_ext::IntoExtend, primitive::UPrimitive, render_strategy::{CPUBuffer, RenderMethods, RenderStrategy}}};
 
 pub struct Renderer<T, P>
 where
@@ -48,22 +49,28 @@ where
 impl<T, P> Renderer<T, P>
 where
     T: RenderStrategy,
-    P: Copy + MetalFormat,
+    P: Copy + MetalFormat + 'static,
 {
     /// Creates a new `Renderer`
-    pub fn new<D, U>(
-        length: D,
+    pub fn new<C>(
+        length: C,
     ) -> Option<Self>
     where
-        D: Dimensional + Dimensional<Output = U>,
-        U: Into<usize>,
+        C: Into<Dimensions<C>>
+        + IntoExtend<usize>
+        + UPrimitive
+        + Copy
+        + Mul<Output = C>,
     {
         let device = if let Some(d) = get_default_device()
             { d } else { return None };
 
         let buffer = if let Some(b) =
             device.create_buffer(
-                length.get_size().into(),
+                length
+                    .into()
+                    .get_size()
+                    .into_idx() * mem::size_of::<Pixel<P>>(),
                 MetalResources::StorageModeShared,
             ) { b } else { return None };
         
@@ -77,5 +84,22 @@ where
             buffer,
             _render_mark: PhantomData,
         })
+    }
+
+    /// Draws a frame
+    pub fn draw_frame<F>(
+        &mut self,
+        callback: F,
+    )
+    where
+        F: FnOnce(&mut [Pixel<P>])
+    {
+        let rgba_buffer: &mut [Pixel<P>] = self.buffer.as_ref()
+            .into_pixel_buffer();
+
+        let drawable = self.layer.as_ref()
+            .nextDrawable();
+
+        (callback)(rgba_buffer);
     }
 }
