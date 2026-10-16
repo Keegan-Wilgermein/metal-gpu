@@ -52,6 +52,11 @@ where
     P: Copy + MetalFormat + 'static,
 {
     /// Creates a new `Renderer`
+    /// 
+    /// This method will return `None`
+    /// if creating the relevant buffers
+    /// fails or the value of `length` is
+    /// not a multiple of the size of `P`
     pub fn new<C>(
         length: C,
     ) -> Option<Self>
@@ -63,24 +68,26 @@ where
         + Mul<Output = C>,
     {
         let length = length.into();
-        let device = if let Some(d) = get_default_device()
-            { d } else { return None };
+        let device = get_default_device()?;
 
-        let buffer = if let Some(b) =
-            device.create_buffer(
+        let buffer = device.create_buffer(
                 length
                     .get_size()
                     .into_idx() * mem::size_of::<Pixel<P>>(),
                 MetalResources::StorageModeShared,
-            ) { b } else { return None };
+            )?;
 
         let desc = MetalTextureDecsription::new(
             length.get_x_length().into_idx(),
             length.get_y_length().into_idx(),
         );
 
-        let texture = if let Some(t) = device.new_texture(desc)
-            { t } else { return None };
+        let texture = MetalTexture::new(
+            &device,
+            &buffer,
+            desc,
+            length.get_x_length().into_idx(),
+        )?;
 
         Some(Self {
             device,

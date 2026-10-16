@@ -3,12 +3,12 @@
 //! Wrapper around `MTLTexture`
 //! 
 
-use std::marker::PhantomData;
+use std::{marker::PhantomData, mem};
 
 use objc2::{rc::Retained, runtime::ProtocolObject};
-use objc2_metal::MTLTexture;
+use objc2_metal::{MTLTexture};
 
-use crate::{metal::metal_format::MetalFormat};
+use crate::{api::{metal_device::MetalDevice, pixel::Pixel}, metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_texture_desc::MetalTextureDecsription}, modules::byte_alignment::ByteAlignment};
 
 /// Add docs later
 pub struct MetalTexture<P>
@@ -43,4 +43,23 @@ where
 impl<P> MetalTexture<P>
 where
     P: Copy + MetalFormat,
-{}
+{
+    pub(crate) fn new(
+        device: &MetalDevice,
+        buffer: &MetalBuffer,
+        desc: MetalTextureDecsription<P>,
+        width: usize,
+    ) -> Option<MetalTexture<P>>
+    where
+        P: Copy + MetalFormat,
+    {
+        let bytes_per_row = device.min_linear_texture_alignment_for_format::<P>()
+            .check_alignment(width * mem::size_of::<Pixel<P>>())?;
+
+        Some(buffer.new_texture_with_offset(
+            desc,
+            0,
+            bytes_per_row,
+        )?)
+    }
+}

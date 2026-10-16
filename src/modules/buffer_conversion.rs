@@ -6,10 +6,10 @@
 
 use std::{mem, slice};
 
-use objc2::{rc::Retained, runtime::ProtocolObject};
+use objc2::{runtime::ProtocolObject};
 use objc2_metal::MTLBuffer;
 
-use crate::{api::pixel::Pixel, metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat}};
+use crate::{api::pixel::Pixel, metal::{metal_format::MetalFormat}};
 
 /// Turns `Self` into a slice of `Self::Output`
 pub trait IntoBuffer<P> {

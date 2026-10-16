@@ -6,9 +6,9 @@
 use std::hash::Hash;
 
 use objc2::{rc::Retained, runtime::ProtocolObject};
-use objc2_metal::{MTLDevice, MTLTextureDescriptor};
+use objc2_metal::{MTLDevice};
 
-use crate::metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_resources::MetalResources, metal_texture::MetalTexture, metal_texture_desc::MetalTextureDecsription};
+use crate::metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_resources::MetalResources};
 
 /// Metal api interface
 pub struct MetalDevice {
@@ -56,6 +56,7 @@ impl MetalDevice {
 // Crate only implementations
 
 impl MetalDevice {
+    /// Creates a buffer
     pub(crate) fn create_buffer(
         &self,
         length: usize,
@@ -69,19 +70,12 @@ impl MetalDevice {
         })
     }
 
-    pub(crate) fn new_texture<P>(
-        &self,
-        desc: MetalTextureDecsription<P>,
-    ) -> Option<MetalTexture<P>>
+    /// Gets the minimum linear texture alignment
+    /// for a given pixel format
+    pub(crate) fn min_linear_texture_alignment_for_format<P>(&self) -> usize
     where
         P: Copy + MetalFormat,
     {
-        let desc: Retained<MTLTextureDescriptor> = desc.into();
-
-        self.retain.newTextureWithDescriptor(
-            &desc,
-        ).map(|v| {
-            v.into()
-        })
+        self.retain.minimumLinearTextureAlignmentForPixelFormat(P::PIXEL_FORMAT)
     }
 }
