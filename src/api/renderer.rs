@@ -60,15 +60,15 @@ where
     /// if creating the relevant buffers
     /// fails or the value of `length` is
     /// not a multiple of the size of `P`
-    pub fn new<C>(
+    pub fn new<C, U>(
         length: C,
     ) -> Option<Self>
     where
-        C: Into<Dimensions<C>>
-        + IntoExtend<usize>
-        + UPrimitive
-        + Copy
-        + Mul<Output = C>,
+        C: Into<Dimensions<U>>,
+        U: IntoExtend<usize>
+            + UPrimitive
+            + Copy
+            + Mul<Output = U>,
     {
         let length = length.into();
         let device = get_default_device()?;

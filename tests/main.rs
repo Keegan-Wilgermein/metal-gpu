@@ -2,16 +2,23 @@
 
 use std::env::current_dir;
 
-use metal_gpu::{api::renderer::Renderer, modules::{render_strategy::CPUBuffer, save::SaveImage}};
+use metal_gpu::{api::{renderer::Renderer}, modules::{render_strategy::CPUBuffer, save::SaveImage}};
 
 #[test]
 fn main() {
-    let renderer = Renderer::<CPUBuffer, u16>::new(64_u32);
+    let width = 2048_u32;
+    let height = 2048_u32;
+    let renderer = Renderer::<CPUBuffer, u16>::new((width, height));
 
     if let Some(mut rend) = renderer {
         rend.draw_frame(|buffer| {
-            // Top, bottom left and bottom right corners
-            let (v0, v1, v2) = ((32.0, 4.0), (4.0, 60.0), (60.0, 60.0));
+            println!("Buffer size: {}", buffer.len());
+
+            let (v0, v1, v2) = (
+                ((width / 2) as f32, (height / 16) as f32), // Top
+                ((width / 16) as f32, (height - (height / 16)) as f32), // Bottom left
+                ((width - (width / 16)) as f32, (height - (height / 16)) as f32), // Bottom right
+            );
 
             // Twice the signed area of the triangle `a`, `b`, `p`
             let edge = |a: (f32, f32), b: (f32, f32), p: (f32, f32)| {
@@ -21,7 +28,7 @@ fn main() {
 
             buffer.iter_mut().enumerate().for_each(|(i, pixel)| {
                 // Samples the centre of the pixel
-                let p = ((i % 64) as f32 + 0.5, (i / 64) as f32 + 0.5);
+                let p = ((i % width as usize) as f32 + 0.5, (i / width as usize) as f32 + 0.5);
 
                 // How much of each corner's colour this pixel gets
                 let w0 = edge(v1, v2, p) / area;
