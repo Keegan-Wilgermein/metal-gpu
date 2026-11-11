@@ -10,5 +10,6 @@ pub mod into_ext;
 pub mod byte_alignment;
 pub mod save;
 pub mod path;
+pub mod render_queue;
 
 pub(crate) mod debug;

@@ -8,7 +8,7 @@ use std::{marker::PhantomData, mem};
 use objc2::{rc::Retained, runtime::ProtocolObject};
 use objc2_metal::{MTLTexture};
 
-use crate::{api::{metal_device::MetalDevice, pixel::Pixel}, metal::{metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_texture_desc::MetalTextureDecsription}, modules::byte_alignment::ByteAlignment};
+use crate::{api::{pixel::Pixel}, metal::{metal_device::MetalDevice, metal_buffer::MetalBuffer, metal_format::MetalFormat, metal_texture_desc::MetalTextureDecsription}, modules::byte_alignment::ByteAlignment};
 
 /// Add docs later
 pub struct MetalTexture<P>

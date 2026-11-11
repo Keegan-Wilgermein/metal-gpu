@@ -17,3 +17,4 @@ pub(crate) mod metal_compute_pipeline;
 pub(crate) mod metal_command_buffer;
 pub(crate) mod metal_compute_command_encoder;
 pub(crate) mod metal_grid;
+pub(crate) mod metal_device;

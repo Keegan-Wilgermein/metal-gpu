@@ -5,7 +5,7 @@
 
 use objc2_metal::{MTLCopyAllDevices, MTLCreateSystemDefaultDevice};
 
-use crate::api::metal_device::MetalDevice;
+use crate::metal::metal_device::MetalDevice;
 
 /// Gets the current system default graphics device
 pub fn get_default_device() -> Option<MetalDevice> {

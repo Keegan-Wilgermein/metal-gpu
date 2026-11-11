@@ -8,7 +8,7 @@ use std::{fs::File, io::BufWriter, marker::PhantomData, mem, ops::Mul, path::Pat
 use objc2_metal::{MTLTexture};
 use png::{ColorType, Encoder, EncodingError};
 
-use crate::{api::{dimensions::Dimensions, pixel::Pixel}, functions::get_default_device, metal::{metal_buffer::MetalBuffer, metal_command_queue::MetalCommandQueue, metal_compute_pipeline::MetalComputePipeline, metal_format::MetalFormat, metal_grid::MetalGrid, metal_resources::MetalResources, metal_texture::MetalTexture, metal_texture_desc::MetalTextureDecsription, metal_texture_usage::MetalTextureUsage}, modules::{buffer_conversion::IntoBuffer, into_ext::IntoExtend, path::file_as_str, primitive::UPrimitive, render_strategy::{CPUBuffer, ComputeShader, RenderMethods, RenderStrategy}, save::{PngChannel, SaveImage}}};
+use crate::{api::{dimensions::Dimensions, pixel::Pixel}, functions::get_default_device, metal::{metal_buffer::MetalBuffer, metal_command_queue::MetalCommandQueue, metal_compute_pipeline::MetalComputePipeline, metal_format::MetalFormat, metal_grid::MetalGrid, metal_resources::MetalResources, metal_texture::MetalTexture, metal_texture_desc::MetalTextureDecsription, metal_texture_usage::MetalTextureUsage}, modules::{buffer_conversion::IntoBuffer, into_ext::IntoExtend, path::file_as_str, primitive::UPrimitive, render_queue::RenderQueue, render_strategy::{CPUBuffer, ComputeShader, RenderStrategy}, save::{PngChannel, SaveImage}}};
 
 pub struct Renderer<T, P>
 where
@@ -19,6 +19,7 @@ where
     buffer: MetalBuffer,
     command: Option<MetalCommandQueue>,
     pipeline: Option<MetalComputePipeline>,
+    render_queue: RenderQueue,
     _render_mark: PhantomData<T>,
 }
 
@@ -30,19 +31,7 @@ where
     fn drop(&mut self) {}
 }
 
-// impl<P> RenderMethods for Renderer<TextureShader, P>
-// where
-//     P: Copy + MetalFormat,
-// {}
-
-// impl<P> RenderMethods for Renderer<ComputeShader, P>
-// where
-//     P: Copy + MetalFormat,
-// {
-    
-// }
-
-impl<P> RenderMethods for Renderer<CPUBuffer, P>
+impl<P> Renderer<CPUBuffer, P>
 where
     P: Copy + MetalFormat,
 {
@@ -57,7 +46,7 @@ where
     /// if creating the relevant buffers
     /// fails or the value of `length` is
     /// not a multiple of the size of `P`
-    fn new<C, U>(
+    pub fn new<C, U>(
         length: C,
     ) -> Option<Self>
     where
@@ -95,20 +84,11 @@ where
             buffer,
             command: None,
             pipeline: None,
+            render_queue: RenderQueue::new(),
             _render_mark: PhantomData,
         })
     }
-}
 
-// impl<P> RenderMethods for Renderer<TextureBuffer, P>
-// where
-//     P: Copy + MetalFormat,
-// {}
-
-impl<P> Renderer<CPUBuffer, P>
-where
-    P: Copy + MetalFormat,
-{
     /// Draws a frame
     pub fn draw_frame<F>(
         &mut self,
@@ -121,6 +101,52 @@ where
             .into_pixel_buffer();
 
         (callback)(rgba_buffer);
+    }
+
+    /// Sets a singular pixel
+    pub fn set_pixel<U>(
+        &mut self,
+        index: impl Into<Dimensions<U>>,
+        pixel: &Pixel<P>,
+    )
+    where
+        U: IntoExtend<usize>
+            + UPrimitive
+            + Copy
+            + Mul<Output = U>,
+    {
+        let index = index.into().get_size().into_idx();
+        self.draw_frame(|buffer| {
+            buffer[index].from_pixel(pixel);
+        });
+    }
+
+    /// Clones and returns the internal buffer
+    pub fn clone_buffer(&self) -> Vec<Pixel<P>> {
+        self.buffer.as_ref()
+            .into_pixel_buffer()
+            .to_vec()
+    }
+
+    /// Clones a buffer into a `Vec<Pixel<P>>`
+    pub fn clone_buffer_into(&self, buffer: &mut Vec<Pixel<P>>) {
+        self.buffer.as_ref()
+            .into_pixel_buffer()
+            .clone_into(buffer);
+    }
+}
+
+impl<P> Renderer<CPUBuffer, P>
+where
+    P: Copy + MetalFormat + Default,
+{
+    /// Clears the buffer to `Pixel::default()`
+    pub fn clear(&mut self) {
+        self.draw_frame(|buffer| {
+            buffer.iter_mut().for_each(|pixel| {
+                pixel.from_pixel(&Pixel::default());
+            });
+        });
     }
 }
 
@@ -176,6 +202,7 @@ where
             texture,
             command: Some(command),
             pipeline: Some(pipeline),
+            render_queue: RenderQueue::new(),
             _render_mark: PhantomData,
         })
     }

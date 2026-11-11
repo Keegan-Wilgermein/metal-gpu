@@ -7,7 +7,7 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 use crate::metal::metal_format::MetalFormat;
 
-/// A representation
+/// A representation of
 /// the rgba values for
 /// a pixel
 #[repr(C)]
@@ -149,7 +149,7 @@ where
             r: B::default(),
             g: B::default(),
             b: B::default(),
-            a: B::MAX,
+            a: B::MIN,
         }
     }
 }
@@ -184,7 +184,7 @@ where
             r: red,
             g: green,
             b: blue,
-            a: B::MAX,
+            a: B::MIN,
         }
     }
 
@@ -242,5 +242,48 @@ where
     /// Sets the pixels `ALPHA` value
     pub fn set_alpha(&mut self, alpha: B) {
         self.a = alpha;
+    }
+
+    /// Sets all pixel colours
+    pub fn set_all(
+        &mut self,
+        red: B,
+        green: B,
+        blue: B,
+        alpha: B,
+    ) {
+        self.set_red(red);
+        self.set_green(green);
+        self.set_blue(blue);
+        self.set_alpha(alpha);
+    }
+
+    /// Sets the values of one pixel to the values from another
+    pub fn from_pixel(
+        &mut self,
+        pixel: &Pixel<B>,
+    ) {
+        self.set_all(
+            pixel.get_red(),
+            pixel.get_green(),
+            pixel.get_blue(),
+            pixel.get_alpha(),
+        );
+    }
+}
+
+pub trait Clear {
+    /// Clears something
+    fn clear(&mut self);
+}
+
+impl<B> Clear for [Pixel<B>]
+where
+    B: Copy + MetalFormat + Default,
+{
+    fn clear(&mut self) {
+        self.iter_mut().for_each(|pixel| {
+            pixel.from_pixel(&Pixel::default());
+        });
     }
 }

@@ -3,7 +3,7 @@
 //! Appends a debug line to a variable, then returns it
 //! 
 
-use std::{fmt::Debug, path::PathBuf};
+use std::fmt::Debug;
 
 /// Checks for validity or prints the value
 #[allow(unused)]
@@ -18,7 +18,4 @@ where
     }
 }
 
-impl Debugger for bool {}
-impl Debugger for PathBuf {}
-impl<T> Debugger for Option<T> where T: Debug, {}
-impl<T, E> Debugger for Result<T, E> where T: Debug, E: Debug {}
+impl<T> Debugger for T where T: Debug {}
