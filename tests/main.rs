@@ -2,13 +2,17 @@
 
 use std::{env::current_dir, time::Instant};
 
-use metal_gpu::{api::renderer::Renderer, modules::{render_strategy::{ComputeShader, RenderMethods}, save::SaveImage}};
+use metal_gpu::{api::renderer::Renderer, modules::{render_strategy::{ComputeShader}, save::SaveImage}};
 
 #[test]
 fn main() {
     let width: u32 = 16_384;
     let height: u32 = 16_384;
-    let renderer = Renderer::<ComputeShader, u16>::new((width, height));
+    let renderer = Renderer::<ComputeShader, u16>::new(
+        (width, height),
+        "./src/metal/shaders/library.metal",
+        "triangle",
+    );
 
     if let Some(mut rend) = renderer {
         let now = Instant::now();
@@ -32,5 +36,7 @@ fn main() {
 
             println!("time to save: {:?}", now.elapsed());
         }
+    } else {
+        println!("Fuck");
     }
 }

@@ -32,12 +32,12 @@ pub struct TextureShader;
 
 impl RenderStrategy for TextureShader {}
 
-/// Add later
+/// Drawn from a predefined shader file
 pub struct ComputeShader;
 
 impl RenderStrategy for ComputeShader {}
 
-/// Add later
+/// A buffer used by the CPU to draw pixel by pixel
 pub struct CPUBuffer;
 
 impl RenderStrategy for CPUBuffer {}
